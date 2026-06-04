@@ -1,0 +1,29 @@
+# Core agent framework
+google-adk>=2.1.0
+google-genai
+
+# Data processing
+pandas
+numpy
+pydantic
+yfinance
+
+# Phoenix tracing and observability
+openinference-instrumentation-google-adk>=0.1.10
+openinference-instrumentation>=0.1.49
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+opentelemetry-api
+arize-phoenix-otel
+
+# API server (FastAPI included in google-adk, but explicit for clarity)
+fastapi
+uvicorn
+python-dotenv
+
+# HTTP requests
+requests
+httpx
+
+# Testing
+pytest
