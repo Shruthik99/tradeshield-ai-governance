@@ -70,7 +70,7 @@ A compliance officer types questions in plain English. The agent investigates us
 ```
 Yahoo Finance (real market data)
   → Data Pipeline (validate, transform, cache)
-    → Trading Model (4-factor rule-based scorer, NOT AI)
+    → Trading Model (7-factor rule-based scorer, NOT AI)
       → Decision + trace → OpenInference → Arize Phoenix Cloud
         → Agent queries traces via Phoenix MCP/REST
           → Evidence-backed response to user
@@ -93,7 +93,7 @@ Yahoo Finance (real market data)
 | React + CopilotKit | Frontend (AG-UI protocol) |
 | Cloud Run | Hosting |
 
-**The trading model uses mathematical formulas (moving averages, weighted scoring), not AI.** It generates auditable decision streams for governance demonstration.
+**The trading model uses mathematical formulas (moving averages, P/E ratios, profit margins, weighted scoring), not AI.** It generates auditable decision streams for governance demonstration.
 
 ---
 
@@ -108,12 +108,13 @@ Yahoo Finance (real market data)
 ### Installation
 
 ```bash
-git clone https://github.com/[YOUR-USERNAME]/tradeshield-ai-governance.git
+git clone https://github.com/Shruthik99/tradeshield-ai-governance.git
 cd tradeshield-ai-governance
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 pip install -r requirements.txt
+pip install -e .
 ```
 
 ### Environment Variables
@@ -121,7 +122,7 @@ pip install -r requirements.txt
 Copy `.env.example` to `.env` and fill in your keys:
 
 ```
-GOOGLE_GENAI_API_KEY=your-gemini-key
+GOOGLE_API_KEY=your-gemini-key
 PHOENIX_API_KEY=your-phoenix-key
 PHOENIX_COLLECTOR_ENDPOINT=https://app.phoenix.arize.com/s/your-space/v1/traces
 ```
@@ -132,8 +133,11 @@ PHOENIX_COLLECTOR_ENDPOINT=https://app.phoenix.arize.com/s/your-space/v1/traces
 # Seed historical data (first time only)
 python scripts/seed.py
 
-# Start the agent
-python -m tradeshield.main
+# Test the agent
+python scripts/test_agent.py
+
+# Run with ADK web UI
+adk web .
 ```
 
 ### Deploy to Cloud Run
@@ -151,25 +155,74 @@ gcloud run deploy tradeshield \
 
 ### The Trading Model (what's being observed)
 
-A simplified multi-factor scoring system using four signals:
-- **Momentum** (30%): 10-day vs 50-day moving average
-- **Volatility** (25%): VIX level assessment
-- **Relative Strength** (25%): stock vs sector performance
-- **Volume** (20%): current vs average trading volume
+A simplified multi-factor scoring system using seven signals:
+- **Momentum** (20%): 10-day vs 50-day moving average — Jegadeesh & Titman (1993)
+- **Value** (15%): P/E ratio vs sector average — Fama & French (1993)
+- **Quality** (15%): profit margin vs sector average — Fama & French (2015)
+- **Volatility** (15%): VIX level assessment — CBOE (1993)
+- **Relative Strength** (15%): stock vs sector performance — MSCI factor research
+- **Mean Reversion** (10%): distance from 20-day moving average — De Bondt & Thaler (1985)
+- **Volume** (10%): current vs average trading volume
 
-This is arithmetic, not AI. The model exists to generate realistic decision streams for governance demonstration. It is not a production trading strategy.
+This is arithmetic, not AI. The model exists to generate realistic decision streams for governance demonstration. It is not a production trading strategy. Factor weights are heuristic starting points reflecting relative academic evidence strength, not optimized values.
 
 ### The Governance Agent (what does the observing)
 
 Powered by Gemini as the reasoning engine. When a compliance officer asks a question, the agent selects the appropriate observability primitive, queries Phoenix traces, and provides evidence-backed answers.
 
+The agent enforces 7 guardrails: scope limitation, no financial advice, no hallucination, tool enforcement, honest limitations, no regulatory claims, and model-agnostic clarity.
+
 ### The Self-Assessment Loop
 
-The reliability assessment primitive queries the agent's own historical traces via Phoenix MCP. It finds past decisions made under similar conditions, calculates actual accuracy, and compares it to the model's stated confidence. If there's a significant gap, it warns the user.
+The reliability assessment primitive queries the agent's own historical traces via Phoenix MCP. It finds past decisions made under similar conditions (same sector, similar VIX level, same momentum direction), calculates actual accuracy, and compares it to the model's stated confidence.
+
+The assessment evaluates five dimensions:
+- **Evidence coverage**: sufficient or sparse historical data?
+- **Past accuracy**: what percentage of similar decisions were correct?
+- **Confidence gap**: stated confidence vs actual track record
+- **Drift signal**: has the model's behavior shifted recently?
+- **Pattern consistency**: were similar cases treated consistently?
 
 This is evidence-based confidence calibration through trace querying — not machine learning or model retraining.
 
 Note: Reliability thresholds (GREEN >70%, YELLOW 50-70%, RED <50%) are heuristic baselines for demonstration. Production deployment would calibrate against institutional risk tolerance.
+
+---
+
+## Project Structure
+
+```
+tradeshield-ai-governance/
+├── app/                        ← ADK web entry point
+│   ├── __init__.py
+│   └── agent.py                ← root_agent definition
+├── tradeshield/                ← Core package
+│   ├── config.py               ← Settings, weights, sector mappings
+│   ├── main.py                 ← FastAPI entry point
+│   ├── agent/                  ← System prompt and tools
+│   │   ├── prompt.py           ← 7 guardrails, tool descriptions
+│   │   └── tools/              ← 5 observability primitives
+│   ├── model/                  ← 7-factor trading model (math, not AI)
+│   │   ├── factors.py          ← Factor calculations
+│   │   └── scorer.py           ← Weighted scoring + decision logic
+│   ├── pipeline/               ← Data ingestion and validation
+│   │   ├── data_fetcher.py     ← Yahoo Finance integration
+│   │   ├── validator.py        ← Pydantic schema validation
+│   │   └── cache.py            ← JSON file caching
+│   └── phoenix/                ← Observability infrastructure
+│       ├── tracing.py          ← OpenInference → Phoenix Cloud
+│       └── client.py           ← Trace querying (REST/MCP)
+├── scripts/
+│   ├── seed.py                 ← Generate 70-100 historical traces
+│   ├── test_agent.py           ← Agent verification
+│   └── verify_setup.py         ← Package verification
+├── data/                       ← Pre-fetched market data (JSON)
+├── tests/                      ← pytest test suite
+├── requirements.txt
+├── pyproject.toml
+├── .env.example
+└── .gitignore
+```
 
 ---
 
@@ -183,6 +236,8 @@ Note: Reliability thresholds (GREEN >70%, YELLOW 50-70%, RED <50%) are heuristic
 - A well-governed AI can still make bad decisions
 - Effective AI governance requires organizational change, not just tools
 - This is a proof of concept demonstrating governance infrastructure
+- The trading model is simplified for demonstration purposes
+- Reliability thresholds are heuristic, not statistically validated
 
 ---
 
