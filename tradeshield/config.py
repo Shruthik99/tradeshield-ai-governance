@@ -77,4 +77,4 @@ SUFFICIENT_EVIDENCE_COUNT = 10
 VIX_SIMILARITY_RANGE = 5  # ±5 points
 
 # --- Gemini Model ---
-GEMINI_MODEL = "gemini-2.0-flash"  # Verified on Day 2, may update
+GEMINI_MODEL = "gemini-2.5-flash"  # Verified on Day 2, may update
