@@ -1,14 +1,3 @@
-"""
-Pre-fetch Script — downloads and caches market data for all 36 stocks.
-
-Run this once to populate the /data folder with JSON files.
-After this, the demo doesn't depend on live Yahoo Finance.
-
-Usage: python scripts/prefetch_data.py
-
-No Gemini calls. No API key usage. Just Yahoo Finance (free, public).
-"""
-
 import sys
 import logging
 from datetime import datetime

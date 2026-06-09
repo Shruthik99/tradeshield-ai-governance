@@ -1,8 +1,7 @@
 """
-Day 1 verification script.
+verification script.
 Run this to confirm all packages are installed correctly.
 
-Usage: python scripts/verify_setup.py
 """
 
 import sys

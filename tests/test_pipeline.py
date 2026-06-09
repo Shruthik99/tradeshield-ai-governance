@@ -2,7 +2,6 @@
 Basic tests for TradeShield.
 3 tests: pipeline, model, agent.
 
-Built on Day 13.
 """
 
 # TODO: Day 13 — implement test_pipeline_returns_valid_data,

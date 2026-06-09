@@ -1,5 +1,5 @@
 """
-Day 2 Test — Verify agent works and traces flow to Phoenix.
+Verify agent works and traces flow to Phoenix.
 
 This script:
 1. Sets up Phoenix tracing
@@ -8,7 +8,6 @@ This script:
 4. Verifies the agent responds correctly
 5. You then check Phoenix dashboard for traces
 
-Usage: python scripts/test_agent.py
 """
 
 import asyncio
