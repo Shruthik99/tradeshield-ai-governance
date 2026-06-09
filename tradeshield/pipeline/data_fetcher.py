@@ -30,13 +30,13 @@ from tradeshield.config import (
 logger = logging.getLogger("tradeshield.pipeline")
 
 
-def fetch_stock_data(ticker: str, period: str = "3mo") -> dict | None:
+def fetch_stock_data(ticker: str, period: str = "6mo") -> dict | None:
     """
     Fetch stock data from Yahoo Finance.
 
     Args:
         ticker: Stock ticker symbol (e.g., "NVDA"). Auto-uppercased.
-        period: How far back to fetch (default "3mo" = 3 months).
+        period: How far back to fetch (default "6mo" = 6 months).
 
     Returns:
         dict with keys: ticker, sector, history (DataFrame), 
