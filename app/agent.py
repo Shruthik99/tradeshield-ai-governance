@@ -3,8 +3,8 @@ TradeShield Agent — ADK Entry Point
 
 Tool status:
 - analyze_trade: REAL (Day 5)
-- explain_decision: REAL (Day 7) ← NEW
-- audit_fairness: placeholder (Day 8)
+- explain_decision: REAL (Day 7)
+- audit_fairness: REAL (Day 8) ← NEW
 - detect_drift: placeholder (Day 9)
 - assess_reliability: placeholder (Day 10)
 """
@@ -19,10 +19,11 @@ from tradeshield.config import GEMINI_MODEL
 # REAL tools
 from tradeshield.agent.tools.analyze import analyze_trade
 from tradeshield.agent.tools.explain import explain_decision
+from tradeshield.agent.tools.fairness import audit_fairness
 
 
 # ============================================================
-# PLACEHOLDER TOOLS (replaced on Days 8-10)
+# PLACEHOLDER TOOLS (replaced on Days 9-10)
 # ============================================================
 
 def system_check() -> dict:
@@ -36,28 +37,11 @@ def system_check() -> dict:
         "tools": {
             "analyze_trade": "operational",
             "explain_decision": "operational",
-            "audit_fairness": "coming Day 8",
+            "audit_fairness": "operational",
             "detect_drift": "coming Day 9",
             "assess_reliability": "coming Day 10",
         },
         "traced_decisions": 108,
-    }
-
-
-def audit_fairness() -> dict:
-    """Check if the trading model treats all stock sectors equally.
-
-    Queries all traced decisions, groups by sector, and calculates
-    disparate impact ratios to detect potential bias.
-
-    Placeholder — full implementation on Day 8.
-
-    Returns:
-        dict: Fairness analysis across sectors with disparate impact ratios.
-    """
-    return {
-        "status": "placeholder",
-        "message": "Fairness audit will be available after Day 8.",
     }
 
 
@@ -115,7 +99,7 @@ root_agent = Agent(
         system_check,
         analyze_trade,          # REAL — Day 5
         explain_decision,       # REAL — Day 7
-        audit_fairness,         # placeholder — Day 8
+        audit_fairness,         # REAL — Day 8
         detect_drift,           # placeholder — Day 9
         assess_reliability,     # placeholder — Day 10
     ],
