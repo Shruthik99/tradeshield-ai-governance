@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeShield — AI Governance for Financial Trading</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2235;
+            --border: #2a3550;
+            --text-primary: #e8edf5;
+            --text-secondary: #8896b0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --green: #22c55e;
+            --yellow: #eab308;
+            --red: #ef4444;
+            --user-bg: #1e3a5f;
+            --agent-bg: #1a2235;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .header h1 span {
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        /* Chat area */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .welcome {
+            text-align: center;
+            padding: 48px 24px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .welcome h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .quick-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            text-align: left;
+            transition: border-color 0.2s, background 0.2s;
+            line-height: 1.4;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .quick-btn .label {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .quick-btn .desc {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* Messages */
+        .message {
+            max-width: 780px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: var(--user-bg);
+        }
+
+        .message.agent .message-avatar {
+            background: var(--accent);
+        }
+
+        .message-content {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .message.user .message-content {
+            background: var(--user-bg);
+        }
+
+        .message.agent .message-content {
+            background: var(--agent-bg);
+            border: 1px solid var(--border);
+        }
+
+        .message-content h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 12px 0 6px 0;
+        }
+
+        .message-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .message-content ul, .message-content ol {
+            padding-left: 20px;
+            margin: 6px 0;
+        }
+
+        .message-content li {
+            margin: 4px 0;
+        }
+
+        .message-content strong {
+            color: var(--accent);
+        }
+
+        .message-content code {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .typing {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.2s infinite;
+        }
+
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Input area */
+        .input-area {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 16px 24px;
+            flex-shrink: 0;
+        }
+
+        .input-wrapper {
+            max-width: 780px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--accent);
+        }
+
+        .input-wrapper input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Scrollbar */
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-track { background: transparent; }
+        .chat-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* Error toast */
+        .error-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--red);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">TS</div>
+            <h1>TradeShield <span>AI Governance Agent</span></h1>
+        </div>
+        <div class="status-badge" id="status">● Connecting...</div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="welcome" id="welcome">
+            <h2>TradeShield Governance Console</h2>
+            <p>Operational observability for AI-assisted financial trading decisions. Ask questions about trading analysis, decision history, fairness, drift, and reliability.</p>
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="sendQuick('Analyze NVDA with a reliability check')">
+                    <span class="label">Analyze Stock</span>
+                    <span class="desc">7-factor analysis + reliability assessment</span>
+                </button>
+                <button class="quick-btn" onclick="sendQuick('Why did the model recommend selling NVDA? Show evidence.')">
+                    <span class="label">Explain Decision</span>
+                    <span class="desc">Evidence lineage for past decisions</span>
+                </button>
+                <button class="quick-btn" onclick="sendQuick('Is the model fair across sectors? Check for bias.')">
+                    <span class="label">Fairness Audit</span>
+                    <span class="desc">Disparate impact across sectors</span>
+                </button>
+                <button class="quick-btn" onclick="sendQuick('Has the model\'s behavior changed recently?')">
+                    <span class="label">Detect Drift</span>
+                    <span class="desc">Behavioral changes over time</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <div class="input-wrapper">
+            <input type="text" id="messageInput" placeholder="Ask TradeShield about any US stock..." autofocus
+                   onkeydown="if(event.key==='Enter')sendMessage()">
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        Governance demonstration — not investment advice.
+        Built with <a href="https://github.com/google/adk-python" target="_blank">Google ADK</a> +
+        <a href="https://arize.com/phoenix" target="_blank">Arize Phoenix</a> +
+        <a href="https://ai.google.dev/gemini-api" target="_blank">Gemini 2.5 Flash</a>
+    </div>
+
+    <div class="error-toast" id="errorToast"></div>
+
+    <script>
+        const API_URL = window.location.origin;
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const welcome = document.getElementById('welcome');
+        const status = document.getElementById('status');
+
+        // Check API health
+        async function checkHealth() {
+            try {
+                const res = await fetch(`${API_URL}/health`);
+                if (res.ok) {
+                    status.textContent = '● Online';
+                    status.style.color = '#22c55e';
+                } else {
+                    status.textContent = '● Offline';
+                    status.style.color = '#ef4444';
+                }
+            } catch {
+                status.textContent = '● Offline';
+                status.style.color = '#ef4444';
+            }
+        }
+        checkHealth();
+
+        function sendQuick(text) {
+            messageInput.value = text;
+            sendMessage();
+        }
+
+        function addMessage(text, role) {
+            if (welcome) welcome.style.display = 'none';
+
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = role === 'user' ? 'Y' : 'TS';
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+
+            // Basic markdown-like formatting
+            let html = text
+                .replace(/### (.*)/g, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n\*/g, '\n•')
+                .replace(/\n•\s?(.*)/g, '<br>• $1');
+
+            content.innerHTML = html;
+
+            div.appendChild(avatar);
+            div.appendChild(content);
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            return div;
+        }
+
+        function addTyping() {
+            const div = document.createElement('div');
+            div.className = 'message agent';
+            div.id = 'typing';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = 'TS';
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+
+            div.appendChild(avatar);
+            div.appendChild(content);
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function removeTyping() {
+            const el = document.getElementById('typing');
+            if (el) el.remove();
+        }
+
+        function showError(msg) {
+            const toast = document.getElementById('errorToast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 5000);
+        }
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            messageInput.value = '';
+            sendBtn.disabled = true;
+            messageInput.disabled = true;
+
+            addMessage(text, 'user');
+            addTyping();
+
+            try {
+                const res = await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+
+                removeTyping();
+
+                if (res.ok) {
+                    const data = await res.json();
+                    addMessage(data.response, 'agent');
+                } else {
+                    const err = await res.text();
+                    showError(`Error: ${res.status} — ${err}`);
+                    addMessage('Sorry, I encountered an error. Please try again.', 'agent');
+                }
+            } catch (e) {
+                removeTyping();
+                showError('Cannot connect to server. Is the API running?');
+                addMessage('Cannot connect to the TradeShield server. Make sure the API is running with: uvicorn api:app --port 8000', 'agent');
+            }
+
+            sendBtn.disabled = false;
+            messageInput.disabled = false;
+            messageInput.focus();
+        }
+    </script>
+</body>
+</html>

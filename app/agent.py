@@ -40,11 +40,12 @@ try:
         connection_params=StdioConnectionParams(
             server_params=StdioServerParameters(
                 command="npx",
-                args=[
-                    "-y", "@arizeai/phoenix-mcp@latest",
-                    "--baseUrl", "https://app.phoenix.arize.com/s/shruthikashetty2309",
-                    "--apiKey", PHOENIX_API_KEY,
-                ],
+                args=["-y", "@arizeai/phoenix-mcp@4.0.8"],
+                env={
+                    **os.environ,
+                    "PHOENIX_API_KEY": PHOENIX_API_KEY,
+                    "PHOENIX_BASE_URL": "https://app.phoenix.arize.com",
+                },
             ),
         ),
     )
