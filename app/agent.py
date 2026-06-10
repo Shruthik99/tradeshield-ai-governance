@@ -4,8 +4,8 @@ TradeShield Agent — ADK Entry Point
 Tool status:
 - analyze_trade: REAL (Day 5)
 - explain_decision: REAL (Day 7)
-- audit_fairness: REAL (Day 8) ← NEW
-- detect_drift: placeholder (Day 9)
+- audit_fairness: REAL (Day 8)
+- detect_drift: REAL (Day 9) ← NEW
 - assess_reliability: placeholder (Day 10)
 """
 
@@ -20,10 +20,11 @@ from tradeshield.config import GEMINI_MODEL
 from tradeshield.agent.tools.analyze import analyze_trade
 from tradeshield.agent.tools.explain import explain_decision
 from tradeshield.agent.tools.fairness import audit_fairness
+from tradeshield.agent.tools.drift import detect_drift
 
 
 # ============================================================
-# PLACEHOLDER TOOLS (replaced on Days 9-10)
+# PLACEHOLDER TOOLS (replaced on Day 10)
 # ============================================================
 
 def system_check() -> dict:
@@ -38,27 +39,10 @@ def system_check() -> dict:
             "analyze_trade": "operational",
             "explain_decision": "operational",
             "audit_fairness": "operational",
-            "detect_drift": "coming Day 9",
+            "detect_drift": "operational",
             "assess_reliability": "coming Day 10",
         },
         "traced_decisions": 108,
-    }
-
-
-def detect_drift() -> dict:
-    """Compare the trading model's recent behavior to past behavior.
-
-    Queries traces from two time periods and compares decision distributions,
-    confidence levels, and factor dominance.
-
-    Placeholder — full implementation on Day 9.
-
-    Returns:
-        dict: Drift analysis comparing recent vs baseline behavior.
-    """
-    return {
-        "status": "placeholder",
-        "message": "Drift detection will be available after Day 9.",
     }
 
 
@@ -100,7 +84,7 @@ root_agent = Agent(
         analyze_trade,          # REAL — Day 5
         explain_decision,       # REAL — Day 7
         audit_fairness,         # REAL — Day 8
-        detect_drift,           # placeholder — Day 9
+        detect_drift,           # REAL — Day 9
         assess_reliability,     # placeholder — Day 10
     ],
 )
