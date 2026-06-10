@@ -1,12 +1,15 @@
 """
 TradeShield Agent — ADK Entry Point
 
+ALL TOOLS ARE REAL. No more placeholders.
+
 Tool status:
 - analyze_trade: REAL (Day 5)
 - explain_decision: REAL (Day 7)
 - audit_fairness: REAL (Day 8)
-- detect_drift: REAL (Day 9) ← NEW
-- assess_reliability: placeholder (Day 10)
+- detect_drift: REAL (Day 9)
+- assess_reliability: REAL (Day 10)
+- analyze_with_reliability: REAL (Day 10) — combined tool
 """
 
 from tradeshield.phoenix.tracing import setup_tracing
@@ -16,16 +19,13 @@ from google.adk.agents import Agent
 from tradeshield.agent.prompt import TRADESHIELD_SYSTEM_PROMPT
 from tradeshield.config import GEMINI_MODEL
 
-# REAL tools
+# ALL REAL TOOLS
 from tradeshield.agent.tools.analyze import analyze_trade
 from tradeshield.agent.tools.explain import explain_decision
 from tradeshield.agent.tools.fairness import audit_fairness
 from tradeshield.agent.tools.drift import detect_drift
+from tradeshield.agent.tools.improve import assess_reliability, analyze_with_reliability
 
-
-# ============================================================
-# PLACEHOLDER TOOLS (replaced on Day 10)
-# ============================================================
 
 def system_check() -> dict:
     """Check if the TradeShield system is operational.
@@ -34,41 +34,22 @@ def system_check() -> dict:
         dict: System status information.
     """
     return {
-        "status": "operational",
+        "status": "fully operational",
         "tools": {
             "analyze_trade": "operational",
             "explain_decision": "operational",
             "audit_fairness": "operational",
             "detect_drift": "operational",
-            "assess_reliability": "coming Day 10",
+            "assess_reliability": "operational",
+            "analyze_with_reliability": "operational",
         },
         "traced_decisions": 108,
-    }
-
-
-def assess_reliability(ticker: str) -> dict:
-    """Assess how reliable the trading model is for a specific stock.
-
-    Checks the model's past accuracy in similar market conditions
-    before presenting a new recommendation.
-
-    Placeholder — full implementation on Day 10.
-
-    Args:
-        ticker: Stock ticker to assess reliability for.
-
-    Returns:
-        dict: Reliability assessment with historical accuracy and warning level.
-    """
-    return {
-        "status": "placeholder",
-        "ticker": ticker.upper(),
-        "message": f"Reliability assessment for {ticker.upper()} available after Day 10.",
+        "version": "all 5 governance primitives active",
     }
 
 
 # ============================================================
-# AGENT DEFINITION
+# AGENT DEFINITION — COMPLETE
 # ============================================================
 
 root_agent = Agent(
@@ -76,15 +57,16 @@ root_agent = Agent(
     model=GEMINI_MODEL,
     description=(
         "TradeShield — Operational observability for AI-assisted "
-        "financial trading decisions."
+        "financial trading decisions. All 5 governance primitives active."
     ),
     instruction=TRADESHIELD_SYSTEM_PROMPT,
     tools=[
         system_check,
-        analyze_trade,          # REAL — Day 5
-        explain_decision,       # REAL — Day 7
-        audit_fairness,         # REAL — Day 8
-        detect_drift,           # REAL — Day 9
-        assess_reliability,     # placeholder — Day 10
+        analyze_trade,              # Tool 1: Run 7-factor analysis
+        explain_decision,           # Tool 2: Explain past decisions
+        audit_fairness,             # Tool 3: Check sector bias
+        detect_drift,               # Tool 4: Detect behavioral changes
+        assess_reliability,         # Tool 5: Check historical reliability
+        analyze_with_reliability,   # Combined: Analysis + reliability
     ],
 )
